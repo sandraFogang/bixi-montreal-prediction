@@ -93,6 +93,9 @@ dépendance et améliore la précision des prédictions.
 ---
 
 ## Structure du repo
+## Structure du repo
+
+```
 bixi-montreal-prediction/
 ├── README.md
 ├── packages.R                  <- installe tous les packages nécessaires
@@ -115,8 +118,8 @@ bixi-montreal-prediction/
 │   └── processed/
 │
 └── outputs/
-└── figures/                <- graphiques exportés
-
+    └── figures/                <- graphiques exportés
+```
 ---
 
 ## Reproduire l'analyse
