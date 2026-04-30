@@ -70,13 +70,13 @@ Universel (UK).
 
 ## Aperçu visuel
 
-### Flux de cyclistes — 587 stations de Montréal
+
 ![Carte de chaleur](outputs/figures/01_carte_chaleur_stations.png)
 
-### Comparaison des modèles ML — Partie 1
+
 ![Comparaison modèles](outputs/figures/02_comparaison_modeles.png)
 
-### Variables les plus influentes — Boosting L2
+
 ![Importance variables](outputs/figures/04_importance_variables.png)
 
 ### Meilleur modèle — Prédictions vs Valeurs réelles (ensemble de test)
