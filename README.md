@@ -27,6 +27,9 @@ vise à prédire le **nombre de départs journaliers BIXI par station** afin de 
   - 12 variables spatiales (infrastructures, urbanisme)
   - 5 variables temporelles (météo, saison)
 
+Les données sont disponibles dans `data/raw/BIXI.RData`.  
+Source originale : https://bixi.com/fr/donnees-ouvertes
+
 ---
 
 ## Méthodologie
@@ -90,3 +93,71 @@ dépendance et améliore la précision des prédictions.
 ---
 
 ## Structure du repo
+bixi-montreal-prediction/
+├── README.md
+├── packages.R                  <- installe tous les packages nécessaires
+│
+├── R/
+│   ├── preprocess.R            <- nettoyage, clustering, split
+│   ├── evaluate.R              <- rmse(), mae(), tableaux, graphiques
+│   └── spatial.R               <- Moran, variogramme, krigeage
+│
+├── scripts/
+│   ├── 01_exploration.R        <- EDA + carte interactive
+│   ├── 02_baseline_ml.R        <- LASSO, CART, Random Forest, GBM
+│   ├── 03_spatial.R            <- Test de Moran + Regression Kriging
+│   └── 04_predict.R            <- prédictions finales
+│
+├── data/
+│   ├── raw/
+│   │   ├── BIXI.RData          <- données brutes
+│   │   └── README.md           <- description des données
+│   └── processed/
+│
+└── outputs/
+└── figures/                <- graphiques exportés
+
+---
+
+## Reproduire l'analyse
+
+**1. Installer les packages :**
+```r
+source("packages.R")
+```
+
+**2. Exploration des données :**
+```r
+source("scripts/01_exploration.R")
+```
+
+**3. Modèles ML classiques :**
+```r
+source("scripts/02_baseline_ml.R")
+```
+
+**4. Analyse spatiale et Regression Kriging :**
+```r
+source("scripts/03_spatial.R")
+```
+
+**5. Prédictions finales :**
+```r
+source("scripts/04_predict.R")
+```
+
+---
+
+## Technologies utilisées
+
+**Machine Learning :** `randomForest`, `gbm`, `rpart`, `party`, `glmnet`  
+**Analyse spatiale :** `spdep` (test de Moran), `gstat` (krigeage), `sp`  
+**Traitement parallèle :** `doParallel`, `foreach`  
+**Visualisation :** `ggplot2`, `patchwork`, `leaflet`
+
+---
+
+## Auteure
+
+**Sandra Desmair Fogang Lontouo**  
+data science — HEC Montréal
