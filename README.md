@@ -32,6 +32,22 @@ Source originale : https://bixi.com/fr/donnees-ouvertes
 
 ---
 
+## Aperçu visuel
+
+### Flux de cyclistes — 587 stations de Montréal
+![Carte de chaleur](outputs/figures/01_carte_chaleur_stations.png)
+
+### Comparaison des modèles ML — Partie 1
+![Comparaison modèles](outputs/figures/02_comparaison_modeles.png)
+
+### Variables les plus influentes — Boosting L2
+![Importance variables](outputs/figures/04_importance_variables.png)
+
+### Meilleur modèle — Prédictions vs Valeurs réelles (ensemble de test)
+![Prédictions vs réel](outputs/figures/03_predictions_vs_reel.png)
+
+---
+
 ## Méthodologie
 
 ### 1. Modèles classiques (baseline ML)
@@ -58,7 +74,7 @@ Approche hybride en deux composantes :
 - **Partie déterministe** : LASSO (sélection de variables, validation 
   croisée 10-fold)
 - **Partie spatiale** : krigeage des résidus via ajustement d'un 
-  variogramme
+  variogramme sphérique
 
 $$y = f(X) + \varepsilon_{spatial}$$
 
@@ -69,30 +85,43 @@ Universel (UK).
 
 ## Résultats clés
 
-| Modèle | Performance |
-|--------|-------------|
-| Modèles classiques (Stepwise, LASSO, RF, GBM) | Bonne performance individuelle mais résidus spatialement corrélés |
-| **LASSO + Krigeage Simple (SK)** | **Meilleure performance** — capture la dépendance spatiale résiduelle |
+### Partie 1 — Modèles classiques
 
-Le test de Moran confirme une autocorrélation spatiale significative dans 
-les résidus des modèles classiques. Le Regression Kriging réduit cette 
-dépendance et améliore la précision des prédictions.
+| Modèle | RMSE (validation) | MAE (validation) |
+|--------|------------------|-----------------|
+| Stepwise | 0.1851 | 0.1357 |
+| LASSO / Elastic Net | 0.1774 | 0.1386 |
+| CART | 0.1132 | 0.0827 |
+| Ctree | 0.1258 | 0.0920 |
+| Random Forest | 0.0921 | 0.0672 |
+| **Boosting L2 (GBM)** | **0.0846** | **0.0620** |
 
-**Modèle retenu : LASSO + Krigeage Simple (SK)**
+Meilleur modèle Partie 1 : **Boosting L2** — RMSE = 0.0846 vs baseline 0.244 **(−65%)**
+
+### Partie 2 — Regression Kriging
+
+| Modèle | RMSE (validation) | RMSE (test) |
+|--------|------------------|-------------|
+| LASSO seul | 0.192 | 0.197 |
+| LASSO + Krigeage Ordinaire (OK) | 0.187 | 0.176 |
+| **LASSO + Krigeage Simple (SK)** | **0.185** | **0.174** |
+| LASSO + Krigeage Universel (UK) | 0.190 | 0.173 |
+
+Modèle retenu : **LASSO + Krigeage Simple (SK)**
 
 ---
 
 ## Insights principaux
 
-- Forte **dépendance spatiale** entre stations proches
-- La **température** est le facteur temporel dominant
-- Le **walkscore et la densité urbaine** sont les variables spatiales 
-  les plus influentes
-- Le centre-ville concentre la majorité des départs
+- Le **walkscore** est la variable la plus influente (33.1% d'importance)
+- La **zone géographique** capture l'effet spatial local (9.4%)
+- La **température** et les **pistes cyclables** jouent un rôle secondaire
+- Le centre-ville concentre significativement plus de départs
+- Le krigeage améliore les prédictions en capturant la dépendance 
+  spatiale résiduelle non expliquée par le ML
 
 ---
 
-## Structure du repo
 ## Structure du repo
 
 ```
@@ -148,6 +177,15 @@ source("scripts/03_spatial.R")
 ```r
 source("scripts/04_predict.R")
 ```
+
+**6. Générer les graphiques portfolio :**
+```r
+source("scripts/00_graphiques_portfolio.R")
+```
+
+> Note : les scripts 02 et 00 incluent un entraînement GBM 
+> (grille complète) qui peut prendre plusieurs heures selon 
+> la machine. Les résultats sont sauvegardés dans `outputs/`.
 
 ---
 
