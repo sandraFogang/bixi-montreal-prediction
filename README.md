@@ -79,20 +79,22 @@ Universel (UK).
 
 ## Résultats clés
 
-### Partie 1 — Modèles classiques
+### Modèles classiques — prédiction sans structure spatiale
 
 | Modèle | RMSE (validation) | MAE (validation) |
 |--------|------------------|-----------------|
-| Stepwise | 0.1851 | 0.1357 |
-| LASSO / Elastic Net | 0.1774 | 0.1386 |
-| CART | 0.1132 | 0.0827 |
-| Ctree | 0.1258 | 0.0920 |
-| Random Forest | 0.0921 | 0.0672 |
 | **Boosting L2 (GBM)** | **0.0846** | **0.0620** |
+| Random Forest | 0.0921 | 0.0672 |
+| CART (arbre de décision élagué) | 0.1132 | 0.0827 |
+| Ctree (arbre conditionnel) | 0.1258 | 0.0920 |
+| LASSO | 0.1774 | 0.1386 |
+| Elastic Net | 0.1774 | 0.1386 |
+| Stepwise AIC | 0.1851 | 0.1357 |
+
 
 Meilleur modèle Partie 1 : **Boosting L2** — RMSE = 0.0846 vs baseline 0.244 **(−65%)**
 
-### Partie 2 — Regression Kriging
+### Regression Kriging — modélisation spatiale explicite
 
 | Modèle | RMSE (validation) | RMSE (test) |
 |--------|------------------|-------------|
