@@ -1,6 +1,12 @@
+# =============================================================================
 # R/spatial.R
 # Fonctions pour l'analyse spatiale : test de Moran, variogramme, krigeage
-# Utilisées dans scripts/03_spatial.R
+# -----------------------------------------------------------------------------
+# Auteure  : Sandra Desmair Fogang Lontouo
+# Projet   : Prédiction du flux de cyclistes BIXI — Montréal 2019
+# Fonctions: test_moran(), plot_moran(), aggregate_residuals(),
+#            fit_best_variogram(), prep_spatial(), apply_kriging()
+# =============================================================================
 
 #' Test de Moran sur les résidus d'un modèle
 #'

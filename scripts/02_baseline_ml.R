@@ -1,13 +1,21 @@
+# =============================================================================
 # scripts/02_baseline_ml.R
-# Modèles ML classiques : Stepwise, LASSO, CART, Ctree, Random Forest, GBM
-# Hypothèse : indépendance des observations
-# Résultats sauvegardés dans outputs/
+# Modèles ML classiques : LASSO, CART, Random Forest, GBM
+# -----------------------------------------------------------------------------
+# Auteure  : Sandra Desmair Fogang Lontouo
+# Projet   : Prédiction du flux de cyclistes BIXI — Montréal 2019
+# Sortie   : outputs/resultats_baseline_ml.csv, outputs/best_gbm_model.rds
+# Prérequis: packages.R, R/preprocess.R, R/evaluate.R
+# Note     : le GBM (grille complète) peut prendre plusieurs heures
+# =============================================================================
 
 source("packages.R")
 source("R/preprocess.R")
 source("R/evaluate.R")
 
-# --- Préparation des données ---
+# =============================================================================
+# 0. Préparation des données
+# =============================================================================
 data <- prepare_data("data/raw/BIXI.RData")
 train      <- data$train
 validation <- data$validation
@@ -17,23 +25,11 @@ nb_dep_train <- train$nb_departure
 nb_dep_val   <- validation$nb_departure
 nb_dep_test  <- test$nb_departure
 
-# 3 scénarios de données
-make_scenario <- function(df, scenario = c("base", "spatial", "cluster")) {
-  scenario <- match.arg(scenario)
-  if (scenario == "base")    return(dplyr::select(df, -location, -latitude, -longitude, -clusters_geo))
-  if (scenario == "spatial") return(dplyr::select(df, -location, -clusters_geo))
-  if (scenario == "cluster") return(dplyr::select(df, -location))
-}
-
-train_base    <- make_scenario(train,      "base")
-train_spatial <- make_scenario(train,      "spatial")
-train_cluster <- make_scenario(train,      "cluster")
-val_base      <- make_scenario(validation, "base")
-val_spatial   <- make_scenario(validation, "spatial")
-val_cluster   <- make_scenario(validation, "cluster")
-test_base     <- make_scenario(test,       "base")
-test_spatial  <- make_scenario(test,       "spatial")
-test_cluster  <- make_scenario(test,       "cluster")
+# Scénario retenu : avec cluster géographique (meilleur RMSE validation)
+# lat/long exclus — réservés à la partie spatiale (script 03)
+train_cluster <- dplyr::select(train,      -location)
+val_cluster   <- dplyr::select(validation, -location)
+test_cluster  <- dplyr::select(test,       -location)
 
 resultats <- list()
 
@@ -210,7 +206,6 @@ resultats[["GBM"]] <- performance_summary(
 # Tableau comparatif final
 # =============================================================================
 tableau_final <- compare_models(resultats)
-print(tableau_final)
 
 # Sauvegarder les résultats
 saveRDS(tableau_final, "outputs/resultats_baseline_ml.rds")

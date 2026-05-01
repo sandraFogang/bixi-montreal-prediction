@@ -1,6 +1,12 @@
+# =============================================================================
 # R/preprocess.R
 # Fonctions de nettoyage, transformation et préparation des données BIXI
-# Appelé par tous les scripts d'analyse
+# -----------------------------------------------------------------------------
+# Auteure  : Sandra Desmair Fogang Lontouo
+# Projet   : Prédiction du flux de cyclistes BIXI — Montréal 2019
+# Fonctions: load_bixi(), add_time_features(), normalize_coords(),
+#            add_geo_clusters(), transform_features(), prepare_data()
+# =============================================================================
 
 #' Charger et préparer les données BIXI brutes
 #'

@@ -1,3 +1,4 @@
+
 # Prédiction du flux de cyclistes BIXI à Montréal
 ### Machine Learning & Régression Krigeage — Consultant Ville de Montréal
 
@@ -31,7 +32,6 @@ Les données sont disponibles dans `data/raw/BIXI.RData`.
 Source originale : https://bixi.com/fr/donnees-ouvertes
 
 ---
-
 
 ## Méthodologie
 
@@ -70,17 +70,10 @@ Universel (UK).
 
 ## Aperçu visuel
 
-
-![Carte de chaleur](outputs/figures/01_carte_chaleur_stations.png)
-
-
-![Comparaison modèles](outputs/figures/02_comparaison_modeles.png)
-
-
-![Importance variables](outputs/figures/04_importance_variables.png)
-
-### Meilleur modèle — Prédictions vs Valeurs réelles (ensemble de test)
-![Prédictions vs réel](outputs/figures/03_predictions_vs_reel.png)
+| | |
+|---|---|
+| [Carte interactive des départs](outputs/figures/01_carte_chaleur_montreal.html) | ![](outputs/figures/02_comparaison_modeles.png) |
+| ![](outputs/figures/04_importance_variables.png) | ![](outputs/figures/03_predictions_vs_reel.png) |
 
 ---
 
@@ -126,29 +119,32 @@ Modèle retenu : **LASSO + Krigeage Simple (SK)**
 ## Structure du repo
 
 ```
+
 bixi-montreal-prediction/
 ├── README.md
-├── packages.R                  <- installe tous les packages nécessaires
+├── packages.R                     <- installe tous les packages nécessaires
 │
 ├── R/
-│   ├── preprocess.R            <- nettoyage, clustering, split
-│   ├── evaluate.R              <- rmse(), mae(), tableaux, graphiques
-│   └── spatial.R               <- Moran, variogramme, krigeage
+│   ├── preprocess.R               <- nettoyage, clustering, split
+│   ├── evaluate.R                 <- rmse(), mae(), tableaux, graphiques
+│   └── spatial.R                  <- Moran, variogramme, krigeage
 │
 ├── scripts/
-│   ├── 01_exploration.R        <- EDA + carte interactive
-│   ├── 02_baseline_ml.R        <- LASSO, CART, Random Forest, GBM
-│   ├── 03_spatial.R            <- Test de Moran + Regression Kriging
-│   └── 04_predict.R            <- prédictions finales
+│   ├── 00_graphiques_portfolio.R  <- génère les graphiques du README
+│   ├── 01_exploration.R           <- EDA + carte interactive
+│   ├── 02_baseline_ml.R           <- LASSO, CART, Random Forest, GBM
+│   ├── 03_spatial.R               <- Test de Moran + Regression Kriging
+│   └── 04_predict.R               <- prédictions finales
 │
 ├── data/
 │   ├── raw/
-│   │   ├── BIXI.RData          <- données brutes
-│   │   └── README.md           <- description des données
+│   │   ├── BIXI.RData             <- données brutes
+│   │   └── README.md              <- description des données
 │   └── processed/
 │
 └── outputs/
     └── figures/                <- graphiques exportés
+
 ```
 ---
 
@@ -184,10 +180,6 @@ source("scripts/04_predict.R")
 source("scripts/00_graphiques_portfolio.R")
 ```
 
-> Note : les scripts 02 et 00 incluent un entraînement GBM 
-> (grille complète) qui peut prendre plusieurs heures selon 
-> la machine. Les résultats sont sauvegardés dans `outputs/`.
-
 ---
 
 ## Technologies utilisées
@@ -202,4 +194,4 @@ source("scripts/00_graphiques_portfolio.R")
 ## Auteure
 
 **Sandra Desmair Fogang Lontouo**  
-data science — HEC Montréal
+Data Scientist | HEC Montréal

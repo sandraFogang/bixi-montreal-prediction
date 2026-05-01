@@ -1,5 +1,11 @@
-# packages.R — Installation et chargement de tous les packages nécessaires
-# Lancer ce fichier en premier : source("packages.R")
+# =============================================================================
+# packages.R
+# Installation et chargement de tous les packages nécessaires
+# -----------------------------------------------------------------------------
+# Auteure  : Sandra Desmair Fogang Lontouo
+# Projet   : Prédiction du flux de cyclistes BIXI — Montréal 2019
+# Usage    : source("packages.R") — à exécuter en premier
+# =============================================================================
 
 packages <- c(
   # Manipulation de données

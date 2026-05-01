@@ -1,13 +1,23 @@
+# =============================================================================
 # scripts/03_spatial.R
 # Analyse spatiale : Test de Moran + Regression Kriging (OK, SK, UK)
-# Modèle final : LASSO + Krigeage Simple (SK)
+# -----------------------------------------------------------------------------
+# Auteure  : Sandra Desmair Fogang Lontouo
+# Projet   : Prédiction du flux de cyclistes BIXI — Montréal 2019
+# Sortie   : outputs/resultats_spatial.csv, outputs/lasso_model.rds,
+#            outputs/variogram_model.rds, outputs/figures/variogramme.png
+# Prérequis: packages.R, R/preprocess.R, R/evaluate.R, R/spatial.R
+# Modèle retenu : LASSO + Krigeage Simple (SK)
+# =============================================================================
 
 source("packages.R")
 source("R/preprocess.R")
 source("R/evaluate.R")
 source("R/spatial.R")
 
-# --- Préparation des données ---
+# =============================================================================
+# 0. Préparation des données
+# =============================================================================
 data <- prepare_data("data/raw/BIXI.RData")
 train      <- data$train
 validation <- data$validation

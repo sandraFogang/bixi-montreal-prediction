@@ -1,6 +1,12 @@
+# =============================================================================
 # scripts/01_exploration.R
 # Analyse exploratoire des données BIXI
-# Génère les graphiques principaux dans outputs/figures/
+# -----------------------------------------------------------------------------
+# Auteure  : Sandra Desmair Fogang Lontouo
+# Projet   : Prédiction du flux de cyclistes BIXI — Montréal 2019
+# Sortie   : graphiques dans outputs/figures/
+# Prérequis: packages.R, R/preprocess.R
+# =============================================================================
 
 source("packages.R")
 source("R/preprocess.R")

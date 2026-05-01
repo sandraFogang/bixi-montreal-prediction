@@ -32,51 +32,63 @@ train_full <- train %>%
   left_join(spatial %>% dplyr::select(location, clusters_geo),
             by = "location")
 
-# =============================================================
-# GRAPHIQUE 1 — Carte de chaleur des départs par station
-# =============================================================
-message("Graphique 1 : Carte de chaleur...")
+# =============================================================================
+# GRAPHIQUE 1 — Carte de chaleur sur la vraie carte de Montréal (Leaflet)
+# =============================================================================
+message("Graphique 1 : Carte de chaleur Montréal...")
+
+# Statistiques par station avec coordonnées réelles (non normalisées)
+load("data/raw/BIXI.RData")
 
 station_stats <- train %>%
   group_by(location) %>%
-  summarise(
-    mean_dep  = mean(nb_departure),
-    .groups   = "drop"
-  ) %>%
-  left_join(spatial %>% dplyr::select(location, latitude, longitude,
-                                      clusters_geo),
-            by = "location")
-
-p1 <- ggplot(station_stats,
-             aes(x = longitude, y = latitude, color = mean_dep,
-                 size = mean_dep)) +
-  geom_point(alpha = 0.85) +
-  scale_color_gradient2(
-    low     = "#3182bd",
-    mid     = "#fdae6b",
-    high    = "#e6550d",
-    midpoint = median(station_stats$mean_dep),
-    name    = "Départs\nmoyens"
-  ) +
-  scale_size_continuous(range = c(1, 6), guide = "none") +
-  labs(
-    title    = "Flux de cyclistes BIXI — 587 stations de Montréal",
-    subtitle = "Taille et couleur proportionnelles au nombre moyen de départs journaliers",
-    x        = "Longitude",
-    y        = "Latitude",
-    caption  = "Données : BIXI Montréal 2019"
-  ) +
-  theme_minimal(base_size = 12) +
-  theme(
-    plot.title    = element_text(face = "bold", size = 14),
-    plot.subtitle = element_text(color = "grey40", size = 10),
-    legend.position = "right",
-    panel.grid    = element_line(color = "grey92")
+  summarise(mean_dep = mean(nb_departure), .groups = "drop") %>%
+  left_join(
+    Spatial_positions %>% dplyr::select(location, latitude, longitude),
+    by = "location"
   )
 
-ggsave("outputs/figures/01_carte_chaleur_stations.png",
-       plot = p1, width = 10, height = 7, dpi = 180)
-message("  -> Graphique 1 sauvegarde !")
+# Palette de couleurs : bleu (peu) → rouge (beaucoup)
+pal <- leaflet::colorNumeric(
+  palette = c("#3182bd", "#fdae6b", "#e6550d"),
+  domain  = station_stats$mean_dep
+)
+
+carte_chaleur <- leaflet::leaflet(station_stats) %>%
+  leaflet::addProviderTiles(leaflet::providers$CartoDB.Positron) %>%
+  leaflet::addCircleMarkers(
+    lng         = ~longitude,
+    lat         = ~latitude,
+    radius      = ~mean_dep * 20,
+    color       = ~pal(mean_dep),
+    fillColor   = ~pal(mean_dep),
+    stroke      = FALSE,
+    fillOpacity = 0.85,
+    popup       = ~paste0(
+      "<b>Station :</b> ", location,
+      "<br><b>Départs moyens :</b> ", round(mean_dep, 3)
+    )
+  ) %>%
+  leaflet::addLegend(
+    "bottomright",
+    pal    = pal,
+    values = ~mean_dep,
+    title  = "Départs<br>moyens",
+    opacity = 1
+  ) %>%
+  leaflet::addControl(
+    html     = "<b>Flux de cyclistes BIXI — 587 stations de Montréal (2019)</b>",
+    position = "topright"
+  )
+
+# Sauvegarder en HTML interactif
+htmlwidgets::saveWidget(
+  carte_chaleur,
+  "outputs/figures/01_carte_chaleur_montreal.html",
+  selfcontained = TRUE
+)
+
+message("  -> Carte interactive sauvegardée !")
 
 # =============================================================
 # GRAPHIQUE 2 — Comparaison visuelle de tous les modèles

@@ -1,6 +1,12 @@
+# =============================================================================
 # R/evaluate.R
 # Fonctions de métriques et comparaison de modèles
-# Utilisées dans tous les scripts d'analyse
+# -----------------------------------------------------------------------------
+# Auteure  : Sandra Desmair Fogang Lontouo
+# Projet   : Prédiction du flux de cyclistes BIXI — Montréal 2019
+# Fonctions: rmse(), mae(), performance_summary(), compare_models(),
+#            plot_yvyhat()
+# =============================================================================
 
 #' Calcul du RMSE
 #' @param obs Valeurs observées

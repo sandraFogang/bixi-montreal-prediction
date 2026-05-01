@@ -6,8 +6,13 @@
 .RData
 .RDataTmp
 
+# Exception : données du projet BIXI (à publier)
+!data/raw/BIXI.RData
+
 # User-specific files
 .Ruserdata
+
+
 
 # Example code in package build process
 *-Ex.R
@@ -47,3 +52,20 @@ po/*~
 
 # RStudio Connect folder
 rsconnect/
+
+# =============================================================================
+# Projet BIXI — fichiers à ne pas publier
+# =============================================================================
+
+# Modèles entraînés (trop lourds pour GitHub)
+outputs/*.rds
+
+# Résultats CSV (regénérables via les scripts)
+outputs/*.csv
+
+# Variables d'environnement
+.env
+
+# OS
+.DS_Store
+Thumbs.db
