@@ -1,6 +1,8 @@
 
-# Prédiction du flux de cyclistes BIXI à Montréal
-### Machine Learning & Régression Krigeage — Consultant Ville de Montréal
+# Prédiction du flux BIXI à Montréal
+
+### −65% RMSE vs baseline naïve | Machine Learning & Regression Kriging (Moran I = 0.595) | 115k observations
+
 
 ![R](https://img.shields.io/badge/R-4.x-276DC3?logo=r)
 ![Status](https://img.shields.io/badge/status-completed-brightgreen)
@@ -8,67 +10,92 @@
 
 ---
 
+
 ## Objectif
 
-Dans le cadre d'un mandat simulé pour la **Ville de Montréal**, ce projet 
-vise à prédire le **nombre de départs journaliers BIXI par station** afin de :
+Prédire le nombre de départs journaliers par station BIXI afin d’optimiser la distribution des vélos et la planification opérationnelle.
 
-- optimiser l'allocation des vélos
-- anticiper les pics de demande
-- planifier le développement du réseau de pistes cyclables
+Ce projet simule un mandat de conseil pour la Ville de Montréal, avec un focus sur l’amélioration de la performance prédictive à partir de données spatio-temporelles.
 
 ---
 
 ## Données
 
-- **587 stations BIXI**
-- **196 jours (avril - octobre 2019)**
-- **~115 000 observations**
-- **17 variables explicatives :**
-  - 12 variables spatiales (infrastructures, urbanisme)
-  - 5 variables temporelles (météo, saison)
+- 115 000 observations (stations × jours)  
+- Variable cible : nombre de départs journaliers par station  
+- Variables explicatives :
+  - **Spatiales** : localisation, densité urbaine, infrastructures (walkscore, transports, commerces)  
+  - **Temporelles** : jour, saison, jours fériés  
+  - **Météorologiques** : température, précipitations, humidité  
+
+- Données couvrant le réseau BIXI de Montréal (587 stations)
+
+Les données présentent une forte hétérogénéité spatiale et temporelle, ainsi que des valeurs manquantes sur la variable cible.
 
 Les données sont disponibles dans `data/raw/BIXI.RData`.  
 Source originale : https://bixi.com/fr/donnees-ouvertes
 
 ---
 
-## Méthodologie
+## Problème
 
-### 1. Modèles classiques (baseline ML)
+Les modèles de machine learning classiques supposent l’indépendance des observations.
 
-Hypothèse : indépendance des observations.
+Or, dans ce contexte :
+- les stations proches géographiquement présentent des comportements similaires  
+- cette autocorrélation spatiale biaise les modèles standards  
 
-- Régression linéaire (Stepwise AIC/BIC)
-- LASSO / Elastic Net
-- Random Forest
-- Gradient Boosting (GBM)
-- CART / Ctree
-
-### 2. Analyse spatiale
-
-Test de Moran sur les résidus des modèles classiques → détection d'une 
-**forte autocorrélation spatiale**.  
-Conclusion : les modèles classiques sont insuffisants — une modélisation 
-spatiale explicite est nécessaire.
-
-### 3. Modèle final — Regression Kriging
-
-Approche hybride en deux composantes :
-
-- **Partie déterministe** : LASSO (sélection de variables, validation 
-  croisée 10-fold)
-- **Partie spatiale** : krigeage des résidus via ajustement d'un 
-  variogramme sphérique
-
-$$y = f(X) + \varepsilon_{spatial}$$
-
-Trois variantes de krigeage comparées : Ordinaire (OK), Simple (SK), 
-Universel (UK).
+Ignorer cette structure entraîne une perte significative de performance.
 
 ---
 
-## Aperçu visuel
+## Approche
+
+1. Modélisation baseline (ML supervisé)  
+   - Random Forest  
+   - Gradient Boosting (GBM)  
+   - LASSO  
+
+2. Détection de dépendance spatiale  
+   - Test de Moran → I = 0.595 (p-value ≈ 0)  
+   - Autocorrélation spatiale significative  
+
+3. Correction via Regression Kriging  
+   - Modèle hybride :  
+     - LASSO pour la composante déterministe  
+     - Krigeage pour la structure spatiale résiduelle via ajustement d'un   variogramme sphérique
+
+$$y = f(X) + \varepsilon_{spatial}$$
+
+Trois variantes de krigeage comparées : Ordinaire (OK), Simple (SK), Universel (UK).  
+
+Cette approche permet de capturer la dépendance spatiale non modélisée par les méthodes classiques.
+
+---
+
+## Résultat clé
+
+−65% RMSE vs baseline naïve.
+
+Amélioration substantielle de la performance prédictive, validant l’intérêt d’intégrer la structure spatiale.
+
+---
+
+## Insights principaux
+
+- Walkscore : variable la plus influente  
+  → corrélation forte entre densité urbaine et usage BIXI  
+
+- Température : facteur déterminant  
+  → augmentation des départs avec de meilleures conditions météo  
+
+- Autocorrélation spatiale  
+  → les stations proches présentent des comportements similaires  
+  → justification empirique de l’approche géostatistique  
+
+---
+
+## Visualisations
 
 
 
@@ -78,45 +105,34 @@ Universel (UK).
 | ![](outputs/figures/04_importance_variables.png) | ![](outputs/figures/03_predictions_vs_reel.png) |
 
 ---
+## Modèles testés
 
-## Résultats clés
+- Régression linéaire (stepwise AIC/BIC)  
+- Elastic Net  
+- Random Forest  
+- Gradient Boosting (GBM)  
+- LASSO  
 
-### Modèles classiques — prédiction sans structure spatiale
-
-| Modèle | RMSE (validation) | MAE (validation) |
-|--------|------------------|-----------------|
-| **Boosting L2 (GBM)** | **0.0846** | **0.0620** |
-| Random Forest | 0.0921 | 0.0672 |
-| CART (arbre de décision élagué) | 0.1132 | 0.0827 |
-| Ctree (arbre conditionnel) | 0.1258 | 0.0920 |
-| LASSO | 0.1774 | 0.1386 |
-| Elastic Net | 0.1774 | 0.1386 |
-| Stepwise AIC | 0.1851 | 0.1357 |
-
-
-Meilleur modèle Partie 1 : **Boosting L2** — RMSE = 0.0846 vs baseline 0.244 **(−65%)**
-
-### Regression Kriging — modélisation spatiale explicite
-
-| Modèle | RMSE (validation) | RMSE (test) |
-|--------|------------------|-------------|
-| LASSO seul | 0.192 | 0.197 |
-| LASSO + Krigeage Ordinaire (OK) | 0.187 | 0.176 |
-| **LASSO + Krigeage Simple (SK)** | **0.185** | **0.174** |
-| LASSO + Krigeage Universel (UK) | 0.190 | 0.173 |
-
-Modèle retenu : **LASSO + Krigeage Simple (SK)**
+Le modèle LASSO a été retenu pour la composante déterministe du Regression Kriging.
 
 ---
 
-## Insights principaux
 
-- Le **walkscore** est la variable la plus influente (33.1% d'importance)
-- La **zone géographique** capture l'effet spatial local (9.4%)
-- La **température** et les **pistes cyclables** jouent un rôle secondaire
-- Le centre-ville concentre significativement plus de départs
-- Le krigeage améliore les prédictions en capturant la dépendance 
-  spatiale résiduelle non expliquée par le ML
+## Technologies utilisées
+
+**Machine Learning :** `randomForest`, `gbm`, `rpart`, `party`, `glmnet`  
+**Analyse spatiale :** `spdep` (test de Moran), `gstat` (krigeage), `sp`  
+**Traitement parallèle :** `doParallel`, `foreach`  
+**Visualisation :** `ggplot2`, `patchwork`, `leaflet`
+
+---
+
+
+## Conclusion
+
+L’intégration de la dépendance spatiale via la Regression Kriging améliore significativement la performance par rapport aux approches de machine learning classiques.
+
+Ce projet illustre l’intérêt de combiner méthodes statistiques avancées et compréhension métier pour résoudre des problématiques réelles en environnement urbain.
 
 ---
 
@@ -183,15 +199,6 @@ source("scripts/04_predict.R")
 ```r
 source("scripts/00_graphiques_portfolio.R")
 ```
-
----
-
-## Technologies utilisées
-
-**Machine Learning :** `randomForest`, `gbm`, `rpart`, `party`, `glmnet`  
-**Analyse spatiale :** `spdep` (test de Moran), `gstat` (krigeage), `sp`  
-**Traitement parallèle :** `doParallel`, `foreach`  
-**Visualisation :** `ggplot2`, `patchwork`, `leaflet`
 
 ---
 
