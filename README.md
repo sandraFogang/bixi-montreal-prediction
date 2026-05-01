@@ -70,9 +70,11 @@ Universel (UK).
 
 ## Aperçu visuel
 
+
+
 | | |
 |---|---|
-| [Carte interactive des départs](outputs/figures/01_carte_chaleur_montreal.html) | ![](outputs/figures/02_comparaison_modeles.png) |
+| ![](outputs/figures/01_carte_chaleur_montreal.png) | ![](outputs/figures/02_comparaison_modeles.png) |
 | ![](outputs/figures/04_importance_variables.png) | ![](outputs/figures/03_predictions_vs_reel.png) |
 
 ---
